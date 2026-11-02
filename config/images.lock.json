@@ -1,0 +1,32 @@
+{
+  "mongo": {
+    "requested": "mongo:9.0.4",
+    "reference": "mongo:9.0.4@sha256:452bdaf2127b8ff851e31410a267809b9829eded219979f2210e7c7efb85a058",
+    "resolved_utc": "2026-11-01T19:11:35.2253804Z"
+  },
+  "postgres": {
+    "requested": "postgres:18.6-bookworm",
+    "reference": "postgres:18.6-bookworm@sha256:5c4783a8cc3f0074912164f94dfa1be4e043438f0f707cf968d7af9a0d31a2c8",
+    "resolved_utc": "2026-11-01T19:11:36.2362557Z"
+  },
+  "python": {
+    "requested": "python:3.12-slim-bookworm",
+    "reference": "python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337",
+    "resolved_utc": "2026-11-01T19:11:37.3066308Z"
+  },
+  "prometheus": {
+    "requested": "prom/prometheus:v3.15.1",
+    "reference": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+    "resolved_utc": "2026-11-01T19:11:38.2852096Z"
+  },
+  "cadvisor": {
+    "requested": "ghcr.io/google/cadvisor:0.60.6",
+    "reference": "ghcr.io/google/cadvisor:0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+    "resolved_utc": "2026-11-01T19:11:39.1746571Z"
+  },
+  "node_exporter": {
+    "requested": "prom/node-exporter:v1.12.1",
+    "reference": "prom/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+    "resolved_utc": "2026-11-01T19:11:40.1627124Z"
+  }
+}

@@ -1,0 +1,3 @@
+# Python 3.12; el coordinador utiliza la biblioteca estándar.
+# Proporciona zonas IANA también en instalaciones Windows sin base de zonas del SO.
+tzdata==2025.2

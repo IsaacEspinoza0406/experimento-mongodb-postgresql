@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-01",
+  "time": "22:00:00",
+  "timezone": "America/Mexico_City",
+  "shutdown_reserve_seconds": 60,
+  "evidence_reserve_seconds": 30,
+  "minimum_observed_overhead_seconds": 60,
+  "additional_overhead_margin_seconds": 20,
+  "first_pass_runs": 54,
+  "optional_second_c50_runs": 18
+}

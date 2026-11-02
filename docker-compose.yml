@@ -1,0 +1,82 @@
+name: eva02-jsonbench
+services:
+  mongo:
+    image: ${MONGO_IMAGE:?Use --env-file config/images.env}
+    profiles: [mongo]
+    command: [mongod, --bind_ip_all]
+    cpus: ${ENGINE_CPUS:-4.0}
+    mem_limit: ${ENGINE_MEMORY:-4096m}
+    memswap_limit: ${ENGINE_MEMORY:-4096m}
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, 'quit(db.adminCommand({ping:1}).ok ? 0 : 1)']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  postgres:
+    image: ${POSTGRES_IMAGE:?Use --env-file config/images.env}
+    profiles: [postgres]
+    environment:
+      POSTGRES_DB: orders_bench
+      POSTGRES_USER: benchmark
+      POSTGRES_PASSWORD: ${BENCHMARK_PASSWORD:?Define contraseña local en .env}
+    command: [postgres, -c, max_connections=80, -c, shared_buffers=128MB, -c, log_temp_files=0, -c, timezone=UTC, -c, jit=off]
+    cpus: ${ENGINE_CPUS:-4.0}
+    mem_limit: ${ENGINE_MEMORY:-4096m}
+    memswap_limit: ${ENGINE_MEMORY:-4096m}
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U benchmark -d orders_bench]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+  runner:
+    image: eva02-jsonbench-runner:local
+    build:
+      context: .
+      args:
+        PYTHON_IMAGE: ${PYTHON_IMAGE:?Lock requerido}
+    profiles: [tools]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONUNBUFFERED: '1'
+      BENCHMARK_PASSWORD: ${BENCHMARK_PASSWORD:?Define contraseña local}
+    entrypoint: [python]
+  prometheus:
+    image: ${PROMETHEUS_IMAGE:?Lock requerido}
+    profiles: [telemetry]
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=7d]
+    ports: [127.0.0.1:19090:9090]
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+  cadvisor:
+    image: ${CADVISOR_IMAGE:?Lock requerido}
+    profiles: [telemetry]
+    privileged: true
+    cgroup: host
+    # Prometheus sigue a 1s. Colección más frecuente y solo categorías requeridas
+    # para reducir antigüedad/jitter de muestras bajo carga en Docker Desktop.
+    command: [--docker_only=true, --housekeeping_interval=500ms, --allow_dynamic_housekeeping=false, '--disable_metrics=app,cpuLoad,disk,diskIO,network,percpu,perf_event,pressure']
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+  node-exporter:
+    image: ${NODE_EXPORTER_IMAGE:?Lock requerido}
+    profiles: [telemetry]
+    pid: host
+    command: [--path.rootfs=/host]
+    volumes:
+      # Docker Desktop no expone / como shared/slave; mount estático, validar alcance.
+      - /:/host:ro
+volumes:
+  mongo-data:
+  postgres-data:
+  prometheus-data:
